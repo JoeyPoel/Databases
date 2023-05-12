@@ -58,7 +58,7 @@ public class MySQLBoekingsOverzicht extends MySQL<BoekingsOverzicht> {
                 Date aankomstDatum = rs.getDate("aankomstDatum");
                 Date vertrekDatum = rs.getDate("vertrekDatum");
                 boolean betaald = rs.getBoolean("betaald");
-                String accommodatieCode = rs.getString("accommodatieCode");
+                String accommodatieCode = rs.getString("accommodatie_code");
                 String reizerCode = rs.getString("reizigerCode");
                 String voornaam = ""; // not in use
                 String achternaam = rs.getString("reiziger"); // combine voor en achternaam
