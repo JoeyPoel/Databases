@@ -33,7 +33,8 @@ public class MySQLLodge extends MySQL<Lodge> {
     private void load() {
 
         // Voer hier je SQL code in
-        String sql = "";
+        String sql = "SELECT l.*, a.naam, a.stad, a.land, a.kamer, a.personen FROM lodge l\n" +
+                     "INNER JOIN accommodatie a ON l.accommodatie_code = a.accommodatie_code;";
 
         // Als je nog geen query hebt ingevuld breek dan af om een error te voorkomen.
         if (sql.equals(""))
@@ -58,7 +59,7 @@ public class MySQLLodge extends MySQL<Lodge> {
                 boolean autohuur = rs.getBoolean("autohuur");
 
                 // Maak model aan en voeg toe aan arraylist
-                lodges.add(new Lodge(accommodatieCode, naam, stad, land, kamer, personen,prijsPerWeek, autohuur));
+                lodges.add(new Lodge(accommodatieCode, naam, stad, land, kamer, personen, prijsPerWeek, autohuur));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -82,7 +83,6 @@ public class MySQLLodge extends MySQL<Lodge> {
     public Lodge get() {
         return null;
     }
-
 
     /**
      * Voeg een lodge toe

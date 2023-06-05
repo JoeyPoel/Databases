@@ -34,7 +34,8 @@ public class MySQLHotel extends MySQL<Hotel> {
     private void load() {
 
         // Voer hier je SQL code in
-        String sql = "";
+        String sql = "SELECT h.*, a.naam, a.stad, a.land, a.kamer, a.personen FROM hotel h\n" +
+                     "INNER JOIN accommodatie a ON h.accommodatie_code = a.accommodatie_code;";
 
         // Als je nog geen query hebt ingevuld breek dan af om een error te voorkomen.
         if (sql.equals(""))

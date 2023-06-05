@@ -34,7 +34,7 @@ public class MySQLReizigers extends MySQL<Reiziger> {
     private void load() {
 
         // Voer hier je SQL code in
-        String sql = "";
+        String sql = "SELECT * FROM reiziger";
 
         // Als je nog geen query hebt ingevuld breek dan af om een error te voorkomen.
         if (sql.equals(""))

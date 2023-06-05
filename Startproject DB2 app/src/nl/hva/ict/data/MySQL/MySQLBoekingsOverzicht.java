@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * DAO voor de accommodatie
  * @author HBO-ICT
@@ -39,7 +38,9 @@ public class MySQLBoekingsOverzicht extends MySQL<BoekingsOverzicht> {
     private void load() {
 
         // Vul hier je SQL code in
-        String sql = "";
+        String sql = "SELECT res.*, a.naam, a.stad, a.land, CONCAT(rei.voornaam, \" \", rei.achternaam) AS reiziger, rei.plaats FROM reservering res\n" +
+                "INNER JOIN accommodatie a ON res.accommodatie_code = a.accommodatie_code\n" +
+                "INNER JOIN reiziger rei ON res.reizigerCode = rei.reizigerCode;";
 
         // Als je nog geen query hebt ingevuld breek dan af om een error te voorkomen.
         if (sql.equals(""))
@@ -118,7 +119,7 @@ public class MySQLBoekingsOverzicht extends MySQL<BoekingsOverzicht> {
                 Date aankomstDatum = rs.getDate("aankomstDatum");
                 Date vertrekDatum = rs.getDate("vertrekDatum");
                 boolean betaald = rs.getBoolean("betaald");
-                String accommodatieCode = rs.getString("accommodatieCode");
+                String accommodatieCode = rs.getString("accommodatie_code");
 
                 String reizigerVoornaam = rs.getString("voornaam");
                 String reizigerAchternaam = rs.getString("achternaam");
