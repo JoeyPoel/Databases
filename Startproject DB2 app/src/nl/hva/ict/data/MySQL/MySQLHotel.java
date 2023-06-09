@@ -111,7 +111,7 @@ public class MySQLHotel extends MySQL<Hotel> {
     public void remove(Hotel object) {
 
         // Voer hier je SQL code in
-        String sql = "";
+        String sql = "CALL verwijderAccommodatie(?);";
 
         // Als er geen object is wordt de methode afgebroken
         if (object == null)

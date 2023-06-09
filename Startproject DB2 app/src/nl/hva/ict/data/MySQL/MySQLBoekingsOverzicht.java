@@ -38,9 +38,25 @@ public class MySQLBoekingsOverzicht extends MySQL<BoekingsOverzicht> {
     private void load() {
 
         // Vul hier je SQL code in
-        String sql = "SELECT res.*, a.naam, a.stad, a.land, CONCAT(rei.voornaam, \" \", rei.achternaam) AS reiziger, rei.plaats FROM reservering res\n" +
-                "INNER JOIN accommodatie a ON res.accommodatie_code = a.accommodatie_code\n" +
-                "INNER JOIN reiziger rei ON res.reizigerCode = rei.reizigerCode;";
+        String sql = "SELECT \n" +
+                "    accommodatie.naam,\n" +
+                "    accommodatie.stad,\n" +
+                "    accommodatie.land,\n" +
+                "    accommodatie.kamer,\n" +
+                "    accommodatie.accommodatie_code,\n" +
+                "    CONCAT(reiziger.voornaam, ' ', reiziger.achternaam) AS reiziger,    reiziger.reizigerCode,\n" +
+                "    reservering.aankomstDatum,\n" +
+                "    reservering.vertrekDatum,\n" +
+                "    DATEDIFF(reservering.vertrekDatum, reservering.aankomstdatum) AS aantalDagenVerblijf,\n" +
+                "    reservering.betaald \n" +
+                "FROM \n" +
+                "    reservering\n" +
+                "INNER JOIN \n" +
+                "    accommodatie ON reservering.accommodatie_code = accommodatie.accommodatie_code\n" +
+                "INNER JOIN \n" +
+                "    reiziger ON reservering.reizigerCode = reiziger.reizigerCode\n" +
+                "ORDER BY \n" +
+                "    reservering.aankomstDatum;";
 
         // Als je nog geen query hebt ingevuld breek dan af om een error te voorkomen.
         if (sql.equals(""))
@@ -99,7 +115,9 @@ public class MySQLBoekingsOverzicht extends MySQL<BoekingsOverzicht> {
         List<BoekingsOverzicht> reserveringVoor = new ArrayList<>();
 
         // Voer hier je query in
-        String sql = "";
+        String sql = "SELECT res.*, a.naam, a.stad, a.land, rei.voornaam, rei.achternaam, rei.plaats FROM reservering res\n" +
+                "INNER JOIN accommodatie a ON res.accommodatie_code = a.accommodatie_code\n" +
+                "INNER JOIN reiziger rei ON res.reizigerCode = rei.reizigerCode WHERE rei.reizigerCode = ?;";
 
 
         try {
@@ -162,7 +180,7 @@ public class MySQLBoekingsOverzicht extends MySQL<BoekingsOverzicht> {
     private String getReizigerscode(String pCode, LocalDate pDatum) {
 
        // Voer hier je eigen query in
-        String sql = "";
+        String sql = "SELECT GeboektOp(?, ?) AS reizigerCode;";
 
         // default waarde
         String reizigerCode = "";
@@ -215,7 +233,14 @@ public class MySQLBoekingsOverzicht extends MySQL<BoekingsOverzicht> {
         if (reizigerscode != null) {
 
             // Haal alle reserveringen op
-            String sql = "";
+            String sql = "SELECT rei.voornaam, " +
+                    "rei.achternaam, " +
+                    "rei.adres, " +
+                    "rei.postcode, " +
+                    "rei.plaats, " +
+                    "rei.land, " +
+                    "rei.hoofdreiziger " +
+                    "FROM reiziger rei WHERE rei.reizigerCode = ?;";
 
             // Als je nog geen query hebt ingevuld breek dan af om een error te voorkomen.
             if (sql.equals(""))
