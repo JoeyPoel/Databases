@@ -1,6 +1,8 @@
 package nl.hva.ict.data.MongoDB;
 
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import nl.hva.ict.MainApplication;
 import nl.hva.ict.models.Reiziger;
 import org.bson.Document;
@@ -49,7 +51,8 @@ public class MongoReizigers extends MongoDB {
      */
     @Override
     public void add(Object object) {
-
+        reiziger.insertOne(document);
+        // Voeg het nieuwe document toe aan de collectie
     }
 
 
@@ -58,7 +61,9 @@ public class MongoReizigers extends MongoDB {
      */
     @Override
     public void update(Object object) {
-
+        reiziger.replaceOne(new Document("_id", document.get("_id")), document);
+        // De _id sleutel is de unieke identificator van het document
+        // Hiermee wordt het bestaande document vervangen door het bijgewerkte document
     }
 
     /**
@@ -66,6 +71,8 @@ public class MongoReizigers extends MongoDB {
      */
     @Override
     public void remove(Object object) {
+        reiziger.deleteOne(new Document("_id", documentId));
+        // Verwijder het document met de opgegeven _id uit de collectie
     }
 
     /**

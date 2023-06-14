@@ -23,11 +23,11 @@ public class MainApplication extends Application {
     private static final String MYSQL_HOST = "jdbc:mysql://localhost:3306/bigfive?autoReconnect=true&serverTimezone=Europe/Amsterdam&useSSL=False";
     private static final String MYSQL_USERNAME = "root";  // vul hier je DB username in
     private static final String MYSQL_PASSWORD = "root"; // vul hier je DB wachtwoord in
-
     //Mongo NoSQL
-    private static final String NOSQL_HOST = ""; // Vul hier je MongoDB gegevens in. Iets met mongodb+srv://......
-    private static final String NOSQL_DATABASE = ""; // Vul hier je database gegevens in;
-    
+    private static final String NOSQL_HOST = "mongodb+srv://root:root@bigfive.madvfzx.mongodb.net/?retryWrites=true&w=majority"; // Vul hier je MongoDB gegevens in. Iets met mongodb+srv://......
+    private static final String NOSQL_DATABASE = "big_five_safari"; // Vul hier je database gegevens in;
+
+    MongoReizigers mongoReizigers = new MongoReizigers();
     //Data models
     private static final MySQLReizigers mySQLReizigers = new MySQLReizigers();
     private static final MySQLLodge mySQLLodge = new MySQLLodge();
