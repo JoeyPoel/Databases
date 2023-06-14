@@ -17,14 +17,15 @@ public class ReizigerController extends Controller {
 
     public ReizigerController() {
         reizigersView = new ReizigersView();
+        Reiziger reiziger = reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem();
         reizigersView.getReizigersViewListView().getSelectionModel().selectedItemProperty()
                 .addListener(e -> getItemsInFields());
         reizigersView.getComboReistSamenMet().getSelectionModel().selectedItemProperty()
                 .addListener(e -> getItemsComboBox());
-        reizigersView.getBtSave().setOnAction(e -> save());
+        reizigersView.getBtSave().setOnAction(e -> save(reiziger));
         reizigersView.getBtUpdateData().setOnAction(e -> refreshData());
-        reizigersView.getBtNew().setOnAction(e -> insert());
-        reizigersView.getBtDelete().setOnAction(e -> delete());
+        reizigersView.getBtNew().setOnAction(e -> insert(reiziger));
+        reizigersView.getBtDelete().setOnAction(e -> delete(reiziger));
         loadData();
     }
 
@@ -44,15 +45,25 @@ public class ReizigerController extends Controller {
         MainApplication.getMySQLReizigers().reload();
     }
 
-    private void save() {
+    private void save(Reiziger reiziger) {
+        reiziger.setReizigersCode(reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem().getReizigersCode());
+        reiziger.setVoornaam(reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem().getVoornaam());
+        reiziger.setAchternaam(reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem().getAchternaam());
+        reiziger.setPlaats(reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem().getPlaats());
+        reiziger.setLand(reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem().getLand());
+        reiziger.setPostcode(reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem().getPostcode());
+        reiziger.setHoofdreiziger(reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem().getHoofdreiziger());
         // bewaar (update) record
     }
 
-    private void delete() {
+    private void delete(Reiziger reiziger) {
+        reizigersView.getReizigersViewListView().getItems().remove(reiziger) ;
+
         // delete dit record
     }
 
-    private void insert() {
+    private void insert(Reiziger reiziger) {
+        reizigersView.getReizigersViewListView().getItems().add(reiziger);
         //Voeg toe
     }
 
