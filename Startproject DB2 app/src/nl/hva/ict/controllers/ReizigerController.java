@@ -53,17 +53,20 @@ public class ReizigerController extends Controller {
         reiziger.setLand(reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem().getLand());
         reiziger.setPostcode(reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem().getPostcode());
         reiziger.setHoofdreiziger(reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem().getHoofdreiziger());
+        MainApplication.getMongoDBReizigers().update(reiziger);
         // bewaar (update) record
+
     }
 
     private void delete(Reiziger reiziger) {
         reizigersView.getReizigersViewListView().getItems().remove(reiziger) ;
-
+        MainApplication.getMongoDBReizigers().remove(reiziger);
         // delete dit record
     }
 
     private void insert(Reiziger reiziger) {
         reizigersView.getReizigersViewListView().getItems().add(reiziger);
+        MainApplication.getMongoDBReizigers().add(reiziger);
         //Voeg toe
     }
 
