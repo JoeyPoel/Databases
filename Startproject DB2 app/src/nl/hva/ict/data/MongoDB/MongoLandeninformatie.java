@@ -1,5 +1,7 @@
 package nl.hva.ict.data.MongoDB;
 
+import com.mongodb.client.model.Accumulators;
+import com.mongodb.client.model.Aggregates;
 import nl.hva.ict.MainApplication;
 import nl.hva.ict.models.Landen;
 import org.bson.Document;
@@ -7,8 +9,10 @@ import org.bson.conversions.Bson;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
 import static com.mongodb.client.model.Aggregates.match;
-import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.*;
 
 
 /**
@@ -75,8 +79,42 @@ public class MongoLandeninformatie extends MongoDB {
      * @param alleenAfrika filter het resultaat zodat wel of niet alleen afrikaanse landen terug komen
      */
     public void wieSpreekt(String taal, boolean alleenAfrika) {
+        // Check if NoSQL server host is specified, otherwise return
+        if (MainApplication.getNosqlHost().equals("")) {
+            return;
+        }
 
-       // Als je geen NoSQL server hebt opgegeven gaat de methode niet verder anders zou je een nullpointer krijgen
+        // Reset ArrayList
+        this.landen.clear();
+
+        // Select collection
+        this.selectedCollection("landen");
+
+        // Aggregation function in MongoDB
+        Bson match = match(eq("languages.name", taal));
+        Bson afrikaMatch = match(eq("region", "Africa"));
+
+        if (alleenAfrika) {
+            match = and(match, afrikaMatch);
+        }
+
+        List<Document> results = collection.aggregate(Arrays.asList(match))
+                .into(new ArrayList<>());
+
+        // Create models and add results to ArrayList
+        for (Document land : results) {
+            this.landen.add(new Landen(land.get("name").toString(), land.get("capital").toString()));
+        }
+    }
+
+    /**
+     * Haal alle informatie op uit de NoSQL server in welke landen je met een bepaalde valuta kan betalen. Gebruik hiervoor aggregation.
+     * Zet het resultaat in de arraylist
+     * @param valuta Welke valuta wil je weten
+     * @param alleenAfrika filter het resultaat zodat wel of niet alleen afrikaanse landen terug komen
+     */
+    public void waarBetaalJeMet(String valuta, boolean alleenAfrika) {
+        // Als je geen NoSQL server hebt opgegeven gaat de methode niet verder anders zou je een nullpointer krijgen
         if (MainApplication.getNosqlHost().equals(""))
             return;
 
@@ -87,7 +125,12 @@ public class MongoLandeninformatie extends MongoDB {
         this.selectedCollection("landen");
 
         // Aggregation functie in Mongo
-        Bson match = match(eq("languages.name", taal));
+        Bson match = match(eq("currencies.name", valuta));
+        Bson afrikaMatch = match(eq("region", "Africa"));
+
+        if (alleenAfrika) {
+            match = and(match, afrikaMatch);
+        }
 
         List<Document> results = collection.aggregate(Arrays.asList(match))
                 .into(new ArrayList<>());
@@ -100,21 +143,38 @@ public class MongoLandeninformatie extends MongoDB {
     }
 
     /**
-     * Haal alle informatie op uit de NoSQL server in welke landen je met een bepaalde valuta kan betalen. Gebruik hiervoor aggregation.
-     * Zet het resultaat in de arraylist
-     * @param valuta Welke valuta wil je weten
-     * @param alleenAfrika filter het resultaat zodat wel of niet alleen afrikaanse landen terug komen
-     */
-    public void waarBetaalJeMet(String valuta, boolean alleenAfrika) {
-    }
-
-    /**
      * Welke landen zijn er in welk werelddeel. Haal deze informatie uit de database
      * . Gebruik hiervoor aggregation.
      * Zet het resultaat in de arraylist
      * @param werelddeel Welke valuta wil je weten
      */
     public void welkeLandenZijnErIn(String werelddeel) {
+        // Als je geen NoSQL server hebt opgegeven gaat de methode niet verder anders zou je een nullpointer krijgen
+        if (MainApplication.getNosqlHost().equals(""))
+            return;
+
+        // reset arraylist
+        this.landen.clear();
+
+        // selecteer collection
+        this.selectedCollection("landen");
+
+        Bson match;
+        // Aggregation functie in Mongo
+        if (werelddeel.contains(" ")) {
+            match = match(eq("subregion", werelddeel));
+        } else{
+            match = match(eq("region", werelddeel));
+        }
+
+        List<Document> results = collection.aggregate(Arrays.asList(match))
+                .into(new ArrayList<>());
+
+        // Maak models en voeg resultaat toe aan arraylist
+        for (Document land : results) {
+            this.landen.add(new Landen(land.get("name").toString(), land.get("capital").toString()));
+
+        }
     }
 
     /**
@@ -124,7 +184,17 @@ public class MongoLandeninformatie extends MongoDB {
         // reset arraylist
         this.landen.clear();
 
-        // Om geen compile error te krijgen wordt tijdelijk 0 teruggegeven.
-        return 0;
+        Bson match = match(eq("subregion", "Eastern Africa"));
+
+        List<Document> results = collection.aggregate(Arrays.asList(match))
+                .into(new ArrayList<>());
+
+        // Calculate total population
+        int population = 0;
+        for (Document document : results) {
+            population += document.getInteger("population");
+        }
+
+        return population;
     }
 }
