@@ -49,7 +49,16 @@ public class MongoReizigers extends MongoDB {
         if (object instanceof Reiziger) {
             Reiziger reiziger = (Reiziger) object;
             Bson filter = Filters.eq("Reizigers code", reiziger.getReizigersCode());
-            Bson update = new Document("$set", reiziger);
+            Document reizigerDocument = new Document("Reizigers code", reiziger.getReizigersCode())
+                    .append("Voornaam", reiziger.getVoornaam())
+                    .append("Achternaam", reiziger.getAchternaam())
+                    .append("Adres", reiziger.getAdres())
+                    .append("Plaats", reiziger.getPlaats())
+                    .append("Land", reiziger.getLand())
+                    .append("Postcode", reiziger.getPostcode())
+                    .append("Hoofdreiziger", reiziger.getHoofdreiziger())
+                    .append("Reizigers code", reiziger.getReizigersCode());
+            Bson update = new Document("$set", reizigerDocument);
             collection.updateOne(filter, update);
         }
         // Replace the existing document with the updated document based on the Reizigers code field

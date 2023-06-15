@@ -17,15 +17,14 @@ public class ReizigerController extends Controller {
 
     public ReizigerController() {
         reizigersView = new ReizigersView();
-        Reiziger reiziger = reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem();
         reizigersView.getReizigersViewListView().getSelectionModel().selectedItemProperty()
                 .addListener(e -> getItemsInFields());
         reizigersView.getComboReistSamenMet().getSelectionModel().selectedItemProperty()
                 .addListener(e -> getItemsComboBox());
-        reizigersView.getBtSave().setOnAction(e -> save(reiziger));
+        reizigersView.getBtSave().setOnAction(e -> save());
         reizigersView.getBtUpdateData().setOnAction(e -> refreshData());
         reizigersView.getBtNew().setOnAction(e -> insert());
-        reizigersView.getBtDelete().setOnAction(e -> delete(reiziger));
+        reizigersView.getBtDelete().setOnAction(e -> delete());
         loadData();
     }
 
@@ -45,22 +44,25 @@ public class ReizigerController extends Controller {
         MainApplication.getMySQLReizigers().reload();
     }
 
-    private void save(Reiziger reiziger) {
+    private void save() {
+        Reiziger reiziger = reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem();
         reiziger.setReizigersCode(reizigersView.getTxtReizigersCode().getText());
         reiziger.setVoornaam(reizigersView.getTxtVoornaam().getText());
         reiziger.setAchternaam(reizigersView.getTxtAchternaam().getText());
         reiziger.setPlaats(reizigersView.getTxtPlaats().getText());
         reiziger.setLand(reizigersView.getTxtLand().getText());
         reiziger.setPostcode(reizigersView.getTxtPostcode().getText());
-        reiziger.setHoofdreiziger(reizigersView.getComboReistSamenMet().getSelectionModel().getSelectedItem().getReizigersCode());
+        reiziger.setHoofdreiziger(reiziger.getHoofdreiziger());
         MainApplication.getMongoDBReizigers().update(reiziger);
         // bewaar (update) record
 
     }
 
-    private void delete(Reiziger reiziger) {
+    private void delete() {
+        Reiziger reiziger = reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem();
         reizigersView.getReizigersViewListView().getItems().remove(reiziger) ;
         MainApplication.getMongoDBReizigers().remove(reiziger);
+
         // delete dit record
     }
 
@@ -72,7 +74,7 @@ public class ReizigerController extends Controller {
         reiziger.setPlaats(reizigersView.getTxtPlaats().getText());
         reiziger.setLand(reizigersView.getTxtLand().getText());
         reiziger.setPostcode(reizigersView.getTxtPostcode().getText());
-        reiziger.setHoofdreiziger("hoi");
+        reiziger.setHoofdreiziger(String.valueOf(reizigersView.getComboReistSamenMet().getSelectionModel().getSelectedItem()));
         reizigersView.getReizigersViewListView().getItems().add(reiziger);
         MainApplication.getMongoDBReizigers().add(reiziger);
         //Voeg toe
@@ -94,7 +96,6 @@ public class ReizigerController extends Controller {
      * Nog niets mee gedaan
      */
     private void getItemsComboBox() {
-
     }
 
     /**
