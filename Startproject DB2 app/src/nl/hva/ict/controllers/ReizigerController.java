@@ -46,13 +46,13 @@ public class ReizigerController extends Controller {
     }
 
     private void save(Reiziger reiziger) {
-        reiziger.setReizigersCode(reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem().getReizigersCode());
-        reiziger.setVoornaam(reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem().getVoornaam());
-        reiziger.setAchternaam(reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem().getAchternaam());
-        reiziger.setPlaats(reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem().getPlaats());
-        reiziger.setLand(reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem().getLand());
-        reiziger.setPostcode(reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem().getPostcode());
-        reiziger.setHoofdreiziger(reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem().getHoofdreiziger());
+        reiziger.setReizigersCode(reizigersView.getTxtReizigersCode().getText());
+        reiziger.setVoornaam(reizigersView.getTxtVoornaam().getText());
+        reiziger.setAchternaam(reizigersView.getTxtAchternaam().getText());
+        reiziger.setPlaats(reizigersView.getTxtPlaats().getText());
+        reiziger.setLand(reizigersView.getTxtLand().getText());
+        reiziger.setPostcode(reizigersView.getTxtPostcode().getText());
+        reiziger.setHoofdreiziger(reizigersView.getComboReistSamenMet().getSelectionModel().getSelectedItem().getReizigersCode());
         MainApplication.getMongoDBReizigers().update(reiziger);
         // bewaar (update) record
 
