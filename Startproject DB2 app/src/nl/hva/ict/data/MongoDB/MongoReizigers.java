@@ -1,11 +1,11 @@
 package nl.hva.ict.data.MongoDB;
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
+import com.mongodb.client.model.Filters;
 import nl.hva.ict.MainApplication;
 import nl.hva.ict.models.Reiziger;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,16 +16,53 @@ public class MongoReizigers extends MongoDB {
 
     private final List<Reiziger> reizigers;
 
-    /**
-     * Construtor
-     */
     public MongoReizigers() {
-
         // init de arraylist
         reizigers = new ArrayList<>();
 
         // startup methode
         load();
+    }
+
+    @Override
+    public void add(Object object) {
+        if (object instanceof Reiziger) {
+            Reiziger reiziger = (Reiziger) object;
+            Document reizigerDocument = new Document("Reizigers code", reiziger.getReizigersCode())
+                    .append("Voornaam", reiziger.getVoornaam())
+                    .append("Achternaam", reiziger.getAchternaam())
+                    .append("Adres", reiziger.getAdres())
+                    .append("Plaats", reiziger.getPlaats())
+                    .append("Land", reiziger.getLand())
+                    .append("Postcode", reiziger.getPostcode())
+                    .append("Hoofdreiziger", reiziger.getHoofdreiziger())
+                    .append("Reizigers code", reiziger.getReizigersCode());
+
+            collection.insertOne(reizigerDocument);
+        }
+        // Add the new document to the collection
+    }
+
+
+    @Override
+    public void update(Object object) {
+        if (object instanceof Reiziger) {
+            Reiziger reiziger = (Reiziger) object;
+            Bson filter = Filters.eq("Reizigers code", reiziger.getReizigersCode());
+            Bson update = new Document("$set", reiziger);
+            collection.updateOne(filter, update);
+        }
+        // Replace the existing document with the updated document based on the Reizigers code field
+    }
+
+    @Override
+    public void remove(Object object) {
+        if (object instanceof Reiziger) {
+            Reiziger reiziger = (Reiziger) object;
+            Bson filter = Filters.eq("Reizigers code", reiziger.getReizigersCode());
+            collection.deleteOne(filter);
+        }
+        // Remove the document from the collection based on the Reizigers code field
     }
 
     /**
@@ -44,35 +81,6 @@ public class MongoReizigers extends MongoDB {
     @Override
     public Object get() {
         return null;
-    }
-
-    /**
-     * Voeg een object toe aan de arraylist. Niet gebruikt in deze class maar door de interface data wel verplicht
-     */
-    @Override
-    public void add(Object object) {
-        reiziger.insertOne(document);
-        // Voeg het nieuwe document toe aan de collectie
-    }
-
-
-    /**
-     * Update een object toe aan de arraylist. Niet gebruikt in deze class maar door de interface data wel verplicht
-     */
-    @Override
-    public void update(Object object) {
-        reiziger.replaceOne(new Document("_id", document.get("_id")), document);
-        // De _id sleutel is de unieke identificator van het document
-        // Hiermee wordt het bestaande document vervangen door het bijgewerkte document
-    }
-
-    /**
-     * Update een object toe aan de arraylist. Niet gebruikt in deze class maar door de interface data wel verplicht
-     */
-    @Override
-    public void remove(Object object) {
-        reiziger.deleteOne(new Document("_id", documentId));
-        // Verwijder het document met de opgegeven _id uit de collectie
     }
 
     /**
