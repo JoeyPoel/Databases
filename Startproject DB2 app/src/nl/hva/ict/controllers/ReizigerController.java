@@ -24,7 +24,7 @@ public class ReizigerController extends Controller {
                 .addListener(e -> getItemsComboBox());
         reizigersView.getBtSave().setOnAction(e -> save(reiziger));
         reizigersView.getBtUpdateData().setOnAction(e -> refreshData());
-        reizigersView.getBtNew().setOnAction(e -> insert(reiziger));
+        reizigersView.getBtNew().setOnAction(e -> insert());
         reizigersView.getBtDelete().setOnAction(e -> delete(reiziger));
         loadData();
     }
@@ -64,7 +64,15 @@ public class ReizigerController extends Controller {
         // delete dit record
     }
 
-    private void insert(Reiziger reiziger) {
+    private void insert() {
+        Reiziger reiziger = new Reiziger();
+        reiziger.setReizigersCode(reizigersView.getTxtReizigersCode().getText());
+        reiziger.setVoornaam(reizigersView.getTxtVoornaam().getText());
+        reiziger.setAchternaam(reizigersView.getTxtAchternaam().getText());
+        reiziger.setPlaats(reizigersView.getTxtPlaats().getText());
+        reiziger.setLand(reizigersView.getTxtLand().getText());
+        reiziger.setPostcode(reizigersView.getTxtPostcode().getText());
+        reiziger.setHoofdreiziger("hoi");
         reizigersView.getReizigersViewListView().getItems().add(reiziger);
         MainApplication.getMongoDBReizigers().add(reiziger);
         //Voeg toe
