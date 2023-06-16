@@ -93,18 +93,17 @@ public class MongoLandeninformatie extends MongoDB {
         this.selectedCollection("landen");
 
         // Aggregation function in MongoDB
-        Bson match = match(eq("languages.name", taal));
-        Bson afrikaMatch = match(eq("region", "Africa"));
+        AggregateIterable<Document> result = collection.aggregate(Arrays.asList(new Document("$match",
+                new Document("languages.name", taal))));
 
         if (alleenAfrika) {
-            match = and(match, afrikaMatch);
+            result = collection.aggregate(Arrays.asList(new Document("$match",
+                    new Document("$and", Arrays.asList(new Document("region", "Africa"),
+                            new Document("languages.name", taal))))));
         }
 
-        List<Document> results = collection.aggregate(Arrays.asList(match))
-                .into(new ArrayList<>());
-
         // Create models and add results to ArrayList
-        for (Document land : results) {
+        for (Document land : result) {
             this.landen.add(new Landen(land.get("name").toString(), land.get("capital").toString()));
         }
     }
