@@ -1,5 +1,6 @@
 package nl.hva.ict.data.MongoDB;
 
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
 import nl.hva.ict.MainApplication;
@@ -13,6 +14,7 @@ import java.util.Objects;
 
 import static com.mongodb.client.model.Aggregates.match;
 import static com.mongodb.client.model.Filters.*;
+import static java.lang.Integer.parseInt;
 
 
 /**
@@ -125,18 +127,17 @@ public class MongoLandeninformatie extends MongoDB {
         this.selectedCollection("landen");
 
         // Aggregation functie in Mongo
-        Bson match = match(eq("currencies.name", valuta));
-        Bson afrikaMatch = match(eq("region", "Africa"));
+        AggregateIterable<Document> result = collection.aggregate(Arrays.asList(new Document("$match",
+                new Document())));
 
         if (alleenAfrika) {
-            match = and(match, afrikaMatch);
+            result = collection.aggregate(Arrays.asList(new Document("$match",
+                    new Document("$and", Arrays.asList(new Document("region", "Africa"),
+                            new Document("currencies.name", valuta))))));
         }
 
-        List<Document> results = collection.aggregate(Arrays.asList(match))
-                .into(new ArrayList<>());
-
         // Maak models en voeg resultaat toe aan arraylist
-        for (Document land : results) {
+        for (Document land : result) {
             this.landen.add(new Landen(land.get("name").toString(), land.get("capital").toString()));
 
         }
@@ -159,21 +160,14 @@ public class MongoLandeninformatie extends MongoDB {
         // selecteer collection
         this.selectedCollection("landen");
 
-        Bson match;
         // Aggregation functie in Mongo
-        if (werelddeel.contains(" ")) {
-            match = match(eq("subregion", werelddeel));
-        } else{
-            match = match(eq("region", werelddeel));
-        }
-
-        List<Document> results = collection.aggregate(Arrays.asList(match))
-                .into(new ArrayList<>());
+        AggregateIterable<Document> result = collection.aggregate(Arrays.asList(new Document("$match",
+                new Document("$or", Arrays.asList(new Document("region", werelddeel),
+                        new Document("subregion", werelddeel))))));
 
         // Maak models en voeg resultaat toe aan arraylist
-        for (Document land : results) {
+        for (Document land : result) {
             this.landen.add(new Landen(land.get("name").toString(), land.get("capital").toString()));
-
         }
     }
 
@@ -184,17 +178,17 @@ public class MongoLandeninformatie extends MongoDB {
         // reset arraylist
         this.landen.clear();
 
-        Bson match = match(eq("subregion", "Eastern Africa"));
-
-        List<Document> results = collection.aggregate(Arrays.asList(match))
-                .into(new ArrayList<>());
-
         // Calculate total population
-        int population = 0;
-        for (Document document : results) {
-            population += document.getInteger("population");
-        }
-
-        return population;
+        AggregateIterable<Document> result = collection.aggregate(Arrays.asList(new Document("$match",
+                        new Document("subregion", "Eastern Africa")),
+                new Document("$group",
+                        new Document("_id", 0L)
+                                .append("totalAmount",
+                                        new Document("$sum", "$population"))),
+                new Document("$project",
+                        new Document("_id", 0L)
+                                .append("totalAmount",
+                                        new Document("$sum", "$totalAmount")))));
+        return parseInt(result.first().get("totalAmount").toString());
     }
 }
