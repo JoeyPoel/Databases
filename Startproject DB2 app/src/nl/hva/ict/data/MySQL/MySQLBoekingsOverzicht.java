@@ -38,25 +38,7 @@ public class MySQLBoekingsOverzicht extends MySQL<BoekingsOverzicht> {
     private void load() {
 
         // Vul hier je SQL code in
-        String sql = "SELECT \n" +
-                "    accommodatie.naam,\n" +
-                "    accommodatie.stad,\n" +
-                "    accommodatie.land,\n" +
-                "    accommodatie.kamer,\n" +
-                "    accommodatie.accommodatie_code,\n" +
-                "    CONCAT(reiziger.voornaam, ' ', reiziger.achternaam) AS reiziger,    reiziger.reizigerCode,\n" +
-                "    reservering.aankomstDatum,\n" +
-                "    reservering.vertrekDatum,\n" +
-                "    DATEDIFF(reservering.vertrekDatum, reservering.aankomstdatum) AS aantalDagenVerblijf,\n" +
-                "    reservering.betaald \n" +
-                "FROM \n" +
-                "    reservering\n" +
-                "INNER JOIN \n" +
-                "    accommodatie ON reservering.accommodatie_code = accommodatie.accommodatie_code\n" +
-                "INNER JOIN \n" +
-                "    reiziger ON reservering.reizigerCode = reiziger.reizigerCode\n" +
-                "ORDER BY \n" +
-                "    reservering.aankomstDatum;";
+        String sql = "SELECT * FROM boekingsoverzicht";
 
         // Als je nog geen query hebt ingevuld breek dan af om een error te voorkomen.
         if (sql.equals(""))
