@@ -177,6 +177,8 @@ public class MongoLandeninformatie extends MongoDB {
         // reset arraylist
         this.landen.clear();
 
+        this.selectedCollection("landen");
+
         // Calculate total population
         AggregateIterable<Document> result = collection.aggregate(Arrays.asList(new Document("$match",
                         new Document("subregion", "Eastern Africa")),
